@@ -1,0 +1,47 @@
+services:
+
+#  db:
+#    image: postgres:15
+#    container_name: postgres
+#    volumes:
+#      - ./pg_data:/var/lib/postgresql/data
+#    env_file:
+#      - .env
+
+  web:
+    container_name: web
+    build: .
+    #    command: python manage.py runserver 0.0.0.0:8000
+    #    command: gunicorn -b 0.0.0.0:8000 voditel.wsgi:application
+    user: daboggg:daboggg
+    command: >
+      bash -c "./manage.py collectstatic --noinput && ./manage.py migrate  && gunicorn -b 0.0.0.0:8000 voditel.wsgi:application"
+
+    env_file:
+      - .env
+#    depends_on:
+#      - db
+    volumes:
+#      - ./:/code/
+#      - ./db:/code/db/
+      - static_volume:/code/static
+      - media_volume:/code/media
+      - db_volume:/code/db
+
+  nginx:
+    container_name: v_nginx
+    build:
+      dockerfile: ./Dockerfile
+      context: ./docker/nginx/
+    volumes:
+      - static_volume:/code/static
+      - media_volume:/code/media
+    depends_on:
+      - web
+    ports:
+      - "${NGINX_EXTERNAL_PORT}:80"
+
+volumes:
+  static_volume:
+  media_volume:
+  db_volume:

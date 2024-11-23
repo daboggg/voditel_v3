@@ -1,0 +1,11 @@
+venv
+.env
+.idea
+db.sqlite3
+pg_data
+/db
+/static
+/media
+cards/tests.py
+__pycache__
+truck_norm_dump.json

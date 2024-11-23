@@ -1,0 +1,14 @@
+/*vh сокращенно означает 90% высоты вьюпорта.*/
+.percent90-height {
+  height: 90vh;
+}
+body {
+  font-size: 1.5rem;
+}
+
+.form-control {
+  font-size: 1.5rem;
+}
+.form-label {
+  font-size: 1.2rem;
+}

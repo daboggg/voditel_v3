@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load common_filters %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="display-6 text-center">
+                    {{ title }}
+                    <a class="link-secondary" href="{% url 'card_delete' card.id %}">
+                        <i class="ms-3 float-end bi bi-trash"></i>
+                    </a>
+                    <a class="link-secondary" href="{% url 'card_edit' card.id %}">
+                        <i class="float-end bi bi-gear"></i>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <table class="table">
+                <tbody>
+                {% if departures %}
+                    <tr>
+                        <td>получить отчет:</td>
+                        <td><span class="float-end"><a href="{% url 'report_detail' card.pk %}"
+                                                       class="btn btn-outline-secondary fw-bold">ОТЧЕТ</a></span></td>
+                    </tr>
+                    <tr>
+                        <td>получить короткий отчет:</td>
+                        <td>
+                            <span class="float-end"><a href="{% url 'short_report' card.pk%}"
+                                                       class="ms-3 btn btn-outline-secondary fw-bold"><i class="bi bi-download"></i></a></span>
+                            <span class="float-end"><a href="{% url 'short_report_email' card.pk%}"
+                                                       class="btn btn-outline-secondary fw-bold"><i class="bi bi-threads"></i></a></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>получить полный отчет:</td>
+                        <td>
+                            <span class="float-end"><a href="{% url 'full_report' card.pk %}"
+                                                       class="ms-3 btn btn-outline-secondary fw-bold"><i class="bi bi-download"></i></a></span>
+                            <span class="float-end"><a href="{% url 'full_report_email' card.pk %}"
+                                                       class="btn btn-outline-secondary fw-bold"><i class="bi bi-threads"></i></a></span>
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td>остаток топлива на 1 число месяца:</td>
+                    <td><span class="float-end badge bg-secondary">{{ card.remaining_fuel.normalize }} л</span></td>
+                </tr>
+                <tr>
+                    <td>пробег на 1 число месяца:</td>
+                    <td><span class="float-end badge bg-secondary">{{ card.mileage }} км</span></td>
+                </tr>
+                <tr>
+                    <td>норма расхода топлива:</td>
+                    <td><span class="float-end badge bg-secondary">{{ card.norm }}</span></td>
+                </tr>
+                <tr>
+                    <td>топливо в баках:</td>
+                    <td><span
+                            class="float-end badge {% if fuel_in_tanks < 0 %} bg-danger {% elif fuel_in_tanks  < 200 and card.truck.name == 'Урал' or fuel_in_tanks  < 400 and card.truck.name == 'Камаз' %} bg-warning {% else %} bg-secondary {% endif %} ">{{ fuel_in_tanks.normalize }} л</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>текущее показание спидометра</td>
+                    <td><span class="float-end badge bg-secondary">{{ actual_mileage }} км</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'departure_add' card.id %}" class="btn btn-secondary">+ Выезд</a>
+                <a href="{% url 'departure_add' card.id %}?eto" class="btn btn-secondary">+ ЕТО</a>
+                <a href="{% url 'departure_add' card.id %}?dozor" class="btn btn-secondary">+ Дозор</a>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="accordion" id="accordionExample">
+
+        {% for deps in departures %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="bg-secondary accordion-button {% if not forloop.first %} collapsed {% endif %}"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#{{ forloop.counter }}"
+                            aria-expanded="{% if forloop.first %} true {% else %} false {% endif %}"
+                            aria-controls="{{ forloop.counter }}">
+                        <span class=" h4 text-white">{{ deps.0.date }} - ({{ deps|length }})</span>
+                    </button>
+                </h2>
+                <div id="{{ forloop.counter }}"
+                     class="accordion-collapse collapse {% if forloop.first %} show {% endif %}"
+                     aria-labelledby="headingOne"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+
+
+                        <table class="table  table-striped">
+                            <tbody>
+                            {% for dep in deps %}
+                                <tr>
+                                    <td>
+                                        <div class="row d-flex align-items-center">
+                                            <div class="col-10">
+                                                <a class="btn" href="{% url 'departure_detail' dep.pk %}"><span
+                                                        class="h5">{{ dep.show_departure }}</span></a>
+                                            </div>
+                                            <div class="col">
+                                                <a class="link-secondary" href="{% url 'departure_delete' dep.pk %}">
+                                                    <i class="float-end bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+    {% pagination %}
+
+    {% if departures %}
+        <div class="row">
+            <div class="col d-flex justify-content-between mx-3 my-3">
+                <a href="{% url 'departure_add' card.id %}" class="btn btn-secondary">+ Выезд</a>
+                <a href="{% url 'departure_add' card.id %}?eto" class="btn btn-secondary">+ ЕТО</a>
+                <a href="{% url 'departure_add' card.id %}?dozor" class="btn btn-secondary">+ Дозор</a>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

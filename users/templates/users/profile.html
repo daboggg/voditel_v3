@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <div class="row align-items-center percent90-height justify-content-center">
+
+        <div class="col-sm-8 col-md-8 col-lg-4">
+            <div class="display-6 text-center mb-3">{{ title }}</div>
+            {% if user.photo %}
+                <img class="img-thumbnail" src="{{ user.photo.url }}" alt="">
+            {% endif %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-text text-danger">{{ form.non_field_errors }}</div>
+
+                {% for f in form %}
+                    <div class="mb-3">
+                        <label for="{{ f.id_for_label }}" class="form-label">{{ f.label }}</label>
+                        {{ f }}
+                        <div class="form-text text-danger">{{ f.errors }}</div>
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-secondary float-end">Сохранить</button>
+            </form>
+            <p class="float-start"><a href="{% url 'users:password_change' %}" class="btn btn-secondary">Сменить пароль</a></p>
+        </div>
+    </div>
+{% endblock %}
