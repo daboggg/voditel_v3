@@ -2,6 +2,7 @@ from datetime import date
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.paginator import Paginator
 from django.db.models import F, Sum
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -39,40 +40,47 @@ class CardAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, Create
         return initial
 
 
+def calculated_result(card: Card) -> dict:
+    res = card.departures.aggregate(
+        total_distance=Sum('distance', default=0),
+        total_mileage_consumption=Sum('distance', default=0) * card.norm.liter_per_km,
+        total_time_with_pump=Sum('with_pump', default=0),
+        total_with_pump_consumption=Sum('with_pump', default=0) * card.norm.work_with_pump_liter_per_min,
+        total_time_without_pump=Sum('without_pump', default=0),
+        total_without_pump_consumption=Sum('without_pump',
+                                           default=0) * card.norm.work_without_pump_liter_per_min,
+        total_refueled=Sum('refueled', default=0),
+        total_fuel_consumption=F('total_mileage_consumption') + F('total_with_pump_consumption') + F(
+            'total_without_pump_consumption'),
+        remaining_fuel=card.remaining_fuel + F('total_refueled') - F('total_fuel_consumption'),
+        current_mileage=card.mileage + F('total_distance')
+    )
+    return res
+
+
 class CardDetail(LoginRequiredMixin, DetailView):
     model = Card
     template_name = 'cards/card_detail.html'
     context_object_name = 'card'
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
+        ctx: dict = super().get_context_data(**kwargs)
         ctx['title'] = f'{self.object}'
 
-        # актуальный остаток топлива в баках
-        fuel_in_tanks = self.object.departures.aggregate(
-            fuel_in_tanks=F('card__remaining_fuel') -
-                          Sum('fuel_consumption') +
-                          Sum('refueled', default=0)) \
-            .get('fuel_in_tanks')
-        ctx['fuel_in_tanks'] = fuel_in_tanks.normalize() if fuel_in_tanks else self.object.remaining_fuel
-
-        # актуальное показание спидометра
-        actual_mileage = self.object.departures.aggregate(
-            actual_mileage=Sum('distance', default=0) + self.object.mileage
-        ).get('actual_mileage')
-        ctx['actual_mileage'] = actual_mileage
+        # добавил в контекст вычисленные данные
+        ctx.update(calculated_result(self.object))
 
         # для пагинации выездов
-        # res = dict()
-        # for item in self.object.departures.all():
-        #     if item.date not in res:
-        #         res[item.date] = []
-        #     res.get(item.date).append(item)
-        # paginator = Paginator(list(res.values()), 7)
-        # page_obj = paginator.page(int(self.request.GET.get('page', 1)))
-        # ctx['paginator'] = paginator
-        # ctx['page_obj'] = page_obj
-        # ctx['departures'] = page_obj.object_list
+        res = dict()
+        for item in self.object.departures.all():
+            if item.date not in res:
+                res[item.date] = []
+            res.get(item.date).append(item)
+        paginator = Paginator(list(res.values()), 7)
+        page_obj = paginator.page(int(self.request.GET.get('page', 1)))
+        ctx['paginator'] = paginator
+        ctx['page_obj'] = page_obj
+        ctx['departures'] = page_obj.object_list
 
         return ctx
 

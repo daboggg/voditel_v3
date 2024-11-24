@@ -29,24 +29,24 @@
                 {% if departures %}
                     <tr>
                         <td>получить отчет:</td>
-                        <td><span class="float-end"><a href="{% url 'report_detail' card.pk %}"
+                        <td><span class="float-end"><a href="#"
                                                        class="btn btn-outline-secondary fw-bold">ОТЧЕТ</a></span></td>
                     </tr>
                     <tr>
                         <td>получить короткий отчет:</td>
                         <td>
-                            <span class="float-end"><a href="{% url 'short_report' card.pk%}"
+                            <span class="float-end"><a href="#"
                                                        class="ms-3 btn btn-outline-secondary fw-bold"><i class="bi bi-download"></i></a></span>
-                            <span class="float-end"><a href="{% url 'short_report_email' card.pk%}"
+                            <span class="float-end"><a href="#"
                                                        class="btn btn-outline-secondary fw-bold"><i class="bi bi-threads"></i></a></span>
                         </td>
                     </tr>
                     <tr>
                         <td>получить полный отчет:</td>
                         <td>
-                            <span class="float-end"><a href="{% url 'full_report' card.pk %}"
+                            <span class="float-end"><a href="#"
                                                        class="ms-3 btn btn-outline-secondary fw-bold"><i class="bi bi-download"></i></a></span>
-                            <span class="float-end"><a href="{% url 'full_report_email' card.pk %}"
+                            <span class="float-end"><a href="#"
                                                        class="btn btn-outline-secondary fw-bold"><i class="bi bi-threads"></i></a></span>
                         </td>
                     </tr>
@@ -66,20 +66,20 @@
                 <tr>
                     <td>топливо в баках:</td>
                     <td><span
-                            class="float-end badge {% if fuel_in_tanks < 0 %} bg-danger {% elif fuel_in_tanks  < 200 and card.truck.name == 'Урал' or fuel_in_tanks  < 400 and card.truck.name == 'Камаз' %} bg-warning {% else %} bg-secondary {% endif %} ">{{ fuel_in_tanks.normalize }} л</span>
+                            class="float-end badge {% if remaining_fuel < 0 %} bg-danger {% elif remaining_fuel  < 200 and card.truck.name == 'Урал' or remaining_fuel  < 400 and card.truck.name == 'Камаз' %} bg-warning {% else %} bg-secondary {% endif %} ">{{ remaining_fuel.normalize }} л</span>
                     </td>
                 </tr>
                 <tr>
                     <td>текущее показание спидометра</td>
-                    <td><span class="float-end badge bg-secondary">{{ actual_mileage }} км</span></td>
+                    <td><span class="float-end badge bg-secondary">{{ current_mileage }} км</span></td>
                 </tr>
                 </tbody>
             </table>
 
             <div class="d-flex justify-content-between">
-                <a href="{% url 'departure_add' card.id %}" class="btn btn-secondary">+ Выезд</a>
-                <a href="{% url 'departure_add' card.id %}?eto" class="btn btn-secondary">+ ЕТО</a>
-                <a href="{% url 'departure_add' card.id %}?dozor" class="btn btn-secondary">+ Дозор</a>
+                <a href="#" class="btn btn-secondary">+ Выезд</a>
+                <a href="#?eto" class="btn btn-secondary">+ ЕТО</a>
+                <a href="#?dozor" class="btn btn-secondary">+ Дозор</a>
             </div>
         </div>
 
@@ -114,11 +114,11 @@
                                     <td>
                                         <div class="row d-flex align-items-center">
                                             <div class="col-10">
-                                                <a class="btn" href="{% url 'departure_detail' dep.pk %}"><span
+                                                <a class="btn" href="#"><span
                                                         class="h5">{{ dep.show_departure }}</span></a>
                                             </div>
                                             <div class="col">
-                                                <a class="link-secondary" href="{% url 'departure_delete' dep.pk %}">
+                                                <a class="link-secondary" href="#">
                                                     <i class="float-end bi bi-trash"></i>
                                                 </a>
                                             </div>
@@ -140,9 +140,9 @@
     {% if departures %}
         <div class="row">
             <div class="col d-flex justify-content-between mx-3 my-3">
-                <a href="{% url 'departure_add' card.id %}" class="btn btn-secondary">+ Выезд</a>
-                <a href="{% url 'departure_add' card.id %}?eto" class="btn btn-secondary">+ ЕТО</a>
-                <a href="{% url 'departure_add' card.id %}?dozor" class="btn btn-secondary">+ Дозор</a>
+                <a href="#" class="btn btn-secondary">+ Выезд</a>
+                <a href="#?eto" class="btn btn-secondary">+ ЕТО</a>
+                <a href="#?dozor" class="btn btn-secondary">+ Дозор</a>
             </div>
         </div>
     {% endif %}
