@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
-from cards.forms import CardAddForm, DepartureAddForm
+from cards.forms import CardAddForm, DepartureAddForm, DepartureUpdateForm
 from cards.models import Card, Departure
 from mixins import ErrorMessageMixin
 
@@ -206,3 +206,22 @@ class DepartureDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         return reverse_lazy("card_detail", kwargs={'pk': self.object.card.pk})
 
 
+class DepartureUpdate(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, UpdateView):
+    model = Departure
+    form_class = DepartureUpdateForm
+    success_message = "Данные изменены"
+    error_message = "Ошибка!"
+    template_name = 'cards/departure_add.html'
+    extra_context = {'title': 'Изменить данные'}
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['current_mileage'] = calculated_result(self.object.card).get('current_mileage')
+        initial['user'] = self.request.user
+        initial['card'] = self.object.card
+        return initial
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['departure'] = self.object
+        return kwargs
