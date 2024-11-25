@@ -118,7 +118,7 @@
                                                         class="h5">{{ dep.show_departure }}</span></a>
                                             </div>
                                             <div class="col">
-                                                <a class="link-secondary" href="#">
+                                                <a class="link-secondary" href="{% url 'departure_delete' dep.pk %}">
                                                     <i class="float-end bi bi-trash"></i>
                                                 </a>
                                             </div>

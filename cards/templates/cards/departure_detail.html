@@ -11,7 +11,7 @@
             <div>
                 <div class="display-6 text-center">
                     {{ departure.place_of_work }}
-                    <a class="link-secondary" href="#">
+                    <a class="link-secondary" href="{% url 'departure_delete' departure.pk %}">
                         <i class="ms-3 float-end bi bi-trash"></i>
                     </a>
                     <a class="link-secondary" href="#">

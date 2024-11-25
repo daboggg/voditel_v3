@@ -29,8 +29,6 @@ class CardAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, Create
     form_class = CardAddForm
     template_name = 'cards/card_add.html'
     extra_context = {'title': 'Добавить карточку'}
-    # success_url = reverse_lazy('card-list')
-    success_url = "/"
     success_message = "Карточка создана"
     error_message = 'Ошибка!'
 
@@ -198,3 +196,13 @@ class DepartureDetail(LoginRequiredMixin, DetailView):
         ctx['mileage_end'] = mileage_end
         ctx['fuel_consumption'] = fuel_consumption
         return ctx
+
+
+class DepartureDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Departure
+    success_message = "Выезд удален"
+
+    def get_success_url(self):
+        return reverse_lazy("card_detail", kwargs={'pk': self.object.card.pk})
+
+
