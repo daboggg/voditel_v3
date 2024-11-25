@@ -29,7 +29,6 @@ class DepartureAdmin(admin.ModelAdmin):
         'return_time',
         'place_of_work',
         'distance',
-        'mileage_end',
         'with_pump',
         'without_pump',
         'refueled',

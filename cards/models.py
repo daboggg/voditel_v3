@@ -1,8 +1,11 @@
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 
 from users.templatetags.common_filters import get_rus_month_year
+from django.utils import timezone
 
 
 class Truck(models.Model):
@@ -45,10 +48,12 @@ class Departure(models.Model):
     date = models.DateField(verbose_name='дата выезда')
     departure_time = models.TimeField(verbose_name='время выезда')
     return_time = models.TimeField(verbose_name='время возвращения')
+    # departure_datetime = models.DateTimeField(verbose_name='время и дата выезда', blank=True, null=True)
+    # return_datetime = models.DateTimeField(verbose_name='время и дата возвращения', blank=True, null=True)
     place_of_work = models.CharField(max_length=40, verbose_name='место/цель выезда')
     # mileage_start = models.PositiveIntegerField(verbose_name='пробег перед выездом (км)')
     distance = models.PositiveIntegerField(blank=True, null=True, verbose_name='пройдено (км)')
-    mileage_end = models.PositiveIntegerField(blank=True, null=True, verbose_name='пробег после выезда (км)')
+    # mileage_end = models.PositiveIntegerField(blank=True, null=True, verbose_name='пробег после выезда (км)')
     with_pump = models.PositiveIntegerField(blank=True, null=True, verbose_name='с насосом (мин)')
     without_pump = models.PositiveIntegerField(blank=True, null=True, verbose_name='без насоса (мин)')
     refueled = models.PositiveIntegerField(blank=True, null=True, verbose_name='заправлено (л)')
@@ -64,7 +69,7 @@ class Departure(models.Model):
     #         yield field.verbose_name, field.value_to_string(self)
 
     def show_departure(self):
-        res = self.place_of_work
+        res = f'{self.departure_time.strftime("%H:%M")}-{self.return_time.strftime("%H:%M")}, {self.place_of_work}'
         if self.distance:
             res += f', пройдено: {self.distance} км'
         if self.with_pump:
@@ -84,16 +89,12 @@ class Departure(models.Model):
     def get_absolute_url(self):
         return reverse('departure_detail', kwargs={'pk': self.id})
 
-    # def save(self, *args, **kwargs):
-    #     fuel_consumption = 0
-    #     if self.distance:
-    #         fuel_consumption += self.distance * self.norm.liter_per_km
-    #     if self.with_pump:
-    #         fuel_consumption += self.with_pump * self.norm.work_with_pump_liter_per_min
-    #     if self.without_pump:
-    #         fuel_consumption += self.without_pump * self.norm.work_without_pump_liter_per_min
-    #     self.fuel_consumption = fuel_consumption
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.departure_time = self.departure_time.replace(second=0)
+        self.return_time = self.return_time.replace(second=0)
+        # self.departure_datetime = datetime.datetime.combine(self.date, self.departure_time, tzinfo=datetime.timezone.utc)
+        # self.return_datetime = datetime.datetime.combine(self.date, self.return_time, tzinfo=datetime.timezone.utc)
+        super().save(*args, **kwargs)
     #
     # def clean(self):
     #     super().clean()

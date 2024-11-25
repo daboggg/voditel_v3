@@ -4,12 +4,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.db.models import F, Sum
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
-from cards.forms import CardAddForm
-from cards.models import Card
+from cards.forms import CardAddForm, DepartureAddForm
+from cards.models import Card, Departure
 from mixins import ErrorMessageMixin
 
 
@@ -104,3 +104,52 @@ class CardDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Card
     success_url = reverse_lazy("card_list")
     success_message = "Карточка удалена"
+
+
+class DepartureAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, CreateView):
+    form_class = DepartureAddForm
+    template_name = 'cards/departure_add.html'
+    success_message = "Выезд добавлен"
+    error_message = 'Ошибка!'
+
+    def get_success_url(self):
+        return reverse_lazy('card_detail', kwargs={'pk': self.card.id})
+
+    def setup(self, request, *args, **kwargs):
+        self.card = get_object_or_404(Card, pk=kwargs['pk'])
+        super().setup(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['title'] = 'Добавить выезд'
+        ctx['card'] = self.card
+        return ctx
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['date'] = date.today()
+        initial['current_mileage'] = calculated_result(self.card).get('current_mileage')
+        initial['card'] = self.card
+        initial['user'] = self.request.user
+        initial['norm'] = self.card.norm
+
+        if 'eto' in self.request.GET:
+            initial['departure_time'] = '08:00:00'
+            initial['return_time'] = '08:30:00'
+            initial['place_of_work'] = 'ЕТО'
+            initial['without_pump'] = 5
+
+        if 'dozor' in self.request.GET:
+            initial['departure_time'] = '21:00:00'
+            initial['return_time'] = '22:00:00'
+            initial['place_of_work'] = 'Целевой дозор'
+            initial['distance'] = 4
+            initial['without_pump'] = 30
+
+        return initial
+
+
+class DepartureDetail(LoginRequiredMixin, DetailView):
+    model = Departure
+    template_name = 'cards/departure_detail.html'
+    context_object_name = 'departure'

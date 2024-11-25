@@ -77,9 +77,9 @@
             </table>
 
             <div class="d-flex justify-content-between">
-                <a href="#" class="btn btn-secondary">+ Выезд</a>
-                <a href="#?eto" class="btn btn-secondary">+ ЕТО</a>
-                <a href="#?dozor" class="btn btn-secondary">+ Дозор</a>
+                <a href="{% url 'departure_add' card.pk %}" class="btn btn-secondary">+ Выезд</a>
+                <a href="{% url 'departure_add' card.pk %}?eto" class="btn btn-secondary">+ ЕТО</a>
+                <a href="{% url 'departure_add' card.pk %}?dozor" class="btn btn-secondary">+ Дозор</a>
             </div>
         </div>
 
@@ -140,9 +140,9 @@
     {% if departures %}
         <div class="row">
             <div class="col d-flex justify-content-between mx-3 my-3">
-                <a href="#" class="btn btn-secondary">+ Выезд</a>
-                <a href="#?eto" class="btn btn-secondary">+ ЕТО</a>
-                <a href="#?dozor" class="btn btn-secondary">+ Дозор</a>
+                <a href="{% url 'departure_add' card.pk %}" class="btn btn-secondary">+ Выезд</a>
+                <a href="{% url 'departure_add' card.pk %}?eto" class="btn btn-secondary">+ ЕТО</a>
+                <a href="{% url 'departure_add' card.pk %}?dozor" class="btn btn-secondary">+ Дозор</a>
             </div>
         </div>
     {% endif %}
