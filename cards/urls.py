@@ -10,7 +10,7 @@ urlpatterns = [
     path('card-edit/<int:pk>/', views.CardUpdate.as_view(), name='card_edit'),
 
     path('departure-add/<int:pk>/', views.DepartureAdd.as_view(), name='departure_add'),
-    # path('departure/<int:pk>/', views.DepartureDetail.as_view(), name='departure_detail'),
+    path('departure/<int:pk>/', views.DepartureDetail.as_view(), name='departure_detail'),
     # path('departure-delete/<int:pk>/', views.DepartureDelete.as_view(), name='departure_delete'),
     # path('departure-edit/<int:pk>/', views.DepartureUpdate.as_view(), name='departure_edit'),
     #

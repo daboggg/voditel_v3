@@ -11,10 +11,10 @@
             <div>
                 <div class="display-6 text-center">
                     {{ departure.place_of_work }}
-                    <a class="link-secondary" href="{% url 'departure_delete' departure.pk %}">
+                    <a class="link-secondary" href="#">
                         <i class="ms-3 float-end bi bi-trash"></i>
                     </a>
-                    <a class="link-secondary" href="{% url 'departure_edit' departure.pk %}">
+                    <a class="link-secondary" href="#">
                         <i class="float-end bi bi-gear"></i>
                     </a>
                 </div>
@@ -42,34 +42,31 @@
                 </tr>
                 <tr>
                     <td>пробег перед выездом (км)</td>
-                    <td><span class="float-end badge bg-secondary">{{ departure.mileage_start }}</span></td>
+                    <td><span class="float-end badge bg-secondary">{{ mileage_start }}</span></td>
                 </tr>
                 <tr>
                     <td>пройдено (км)</td>
-                    <td><span class="float-end badge bg-secondary">{{ departure.distance }}</span></td>
+                    <td><span class="float-end badge bg-secondary">{{ departure.distance|default_if_none:'-' }}</span></td>
                 </tr>
                 <tr>
                     <td>пробег после выезда (км)</td>
-                    <td><span class="float-end badge bg-secondary">{{ departure.mileage_end }}</span></td>
+                    <td><span class="float-end badge bg-secondary">{{ mileage_end }}</span></td>
                 </tr>
                 <tr>
                     <td>с насосом (мин)</td>
-                    <td><span class="float-end badge bg-secondary">{% if departure.with_pump %}
-                        {{ departure.with_pump }}{% else %}-{% endif %}</span></td>
+                    <td><span class="float-end badge bg-secondary">{{ departure.with_pump|default_if_none:'-' }}</span></td>
                 </tr>
                 <tr>
                     <td>без насоса (мин)</td>
-                    <td><span class="float-end badge bg-secondary">{% if departure.without_pump %}
-                        {{ departure.without_pump }}{% else %}-{% endif %}</span></td>
+                    <td><span class="float-end badge bg-secondary">{{ departure.without_pump|default_if_none:'-' }}</span></td>
                 </tr>
                 <tr>
                     <td>заправлено (л)</td>
-                    <td><span class="float-end badge bg-secondary">{% if departure.refueled %}
-                        {{ departure.refueled }}{% else %}-{% endif %}</span></td>
+                    <td><span class="float-end badge bg-secondary">{{ departure.refueled|default_if_none:'-' }}</span></td>
                 </tr>
                 <tr>
                     <td>расход топлива (л)</td>
-                    <td><span class="float-end badge bg-secondary">{{ departure.fuel_consumption.normalize }}</span>
+                    <td><span class="float-end badge bg-secondary">{{ fuel_consumption.normalize }}</span>
                     </td>
                 </tr>
                 <tr>

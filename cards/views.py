@@ -1,9 +1,9 @@
-from datetime import date
+from datetime import date, datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
-from django.db.models import F, Sum
+from django.db.models import F, Sum, QuerySet
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
@@ -133,12 +133,14 @@ class DepartureAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, C
         initial['user'] = self.request.user
         initial['norm'] = self.card.norm
 
+        # заполнить форму если ЕТО
         if 'eto' in self.request.GET:
             initial['departure_time'] = '08:00:00'
             initial['return_time'] = '08:30:00'
             initial['place_of_work'] = 'ЕТО'
             initial['without_pump'] = 5
 
+        # заполнить форму если целевой дозор
         if 'dozor' in self.request.GET:
             initial['departure_time'] = '21:00:00'
             initial['return_time'] = '22:00:00'
@@ -153,3 +155,46 @@ class DepartureDetail(LoginRequiredMixin, DetailView):
     model = Departure
     template_name = 'cards/departure_detail.html'
     context_object_name = 'departure'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        # все выезды в данной карточке
+        departures: QuerySet = self.object.card.departures.all()
+
+        # все выезды завершенные до данного выезда
+        departures_before = list(filter(
+            lambda a: datetime.combine(a.date, a.return_time) <
+                      datetime.combine(self.object.date, self.object.return_time),
+            departures))
+        # общий пробег всех выездов до данного выезда
+        total_distance = 0
+        if departures_before:
+            for departure in departures_before:
+                if departure.distance:
+                    total_distance += departure.distance
+
+        print(departures_before)
+        print(total_distance)
+
+        # пробег до выезда
+        mileage_start = self.object.card.mileage + total_distance
+
+        # пробег после выезда
+        if self.object.distance:
+            mileage_end = mileage_start + self.object.distance
+        else:
+            mileage_end = mileage_start
+
+        # топливо израсходовано за выезд
+        fuel_consumption = 0
+        if self.object.distance:
+            fuel_consumption += self.object.distance * self.object.card.norm.liter_per_km
+        if self.object.with_pump:
+            fuel_consumption += self.object.with_pump * self.object.card.norm.work_with_pump_liter_per_min
+        if self.object.without_pump:
+            fuel_consumption += self.object.without_pump * self.object.card.norm.work_without_pump_liter_per_min
+
+        ctx['mileage_start'] = mileage_start
+        ctx['mileage_end'] = mileage_end
+        ctx['fuel_consumption'] = fuel_consumption
+        return ctx
