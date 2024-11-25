@@ -1,11 +1,9 @@
-from datetime import timedelta
 from datetime import datetime
-from functools import reduce
 
 from bootstrap_datepicker_plus.widgets import MonthPickerInput, DatePickerInput, TimePickerInput
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import QuerySet, F
+from django.db.models import QuerySet
 
 from cards.models import Truck, Norm, Card, Departure
 
@@ -57,6 +55,7 @@ class DepartureAddForm(forms.ModelForm):
         required=False,
         label='Тек. спидометр (км)',
         widget=forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}))
+
     # mileage_end = forms.IntegerField(
     #     required=False,
     #     label='Пробег после выезда (км)',
@@ -129,6 +128,7 @@ class DepartureUpdateForm(forms.ModelForm):
         required=False,
         label='Тек. спидометр (км)',
         widget=forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}))
+
     # mileage_end = forms.IntegerField(
     #     required=False,
     #     label='Пробег после выезда (км)',
@@ -160,8 +160,6 @@ class DepartureUpdateForm(forms.ModelForm):
             'user': forms.HiddenInput(),
             'norm': forms.HiddenInput()
         }
-
-
 
     def clean(self):
 

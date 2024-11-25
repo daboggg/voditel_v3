@@ -171,9 +171,6 @@ class DepartureDetail(LoginRequiredMixin, DetailView):
                 if departure.distance:
                     total_distance += departure.distance
 
-        print(departures_before)
-        print(total_distance)
-
         # пробег до выезда
         mileage_start = self.object.card.mileage + total_distance
 
