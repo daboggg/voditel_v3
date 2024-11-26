@@ -29,7 +29,7 @@
                 {% if departures %}
                     <tr>
                         <td>получить отчет:</td>
-                        <td><span class="float-end"><a href="#"
+                        <td><span class="float-end"><a href="{% url 'report_detail' card.pk %}"
                                                        class="btn btn-outline-secondary fw-bold">ОТЧЕТ</a></span></td>
                     </tr>
                     <tr>

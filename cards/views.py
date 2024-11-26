@@ -39,7 +39,7 @@ class CardAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, Create
 
 
 def calculated_result(card: Card) -> dict:
-    res = card.departures. \
+    res: dict = card.departures. \
         annotate(mileage_consumption=F('distance') * F('norm__liter_per_km'),
                  with_pump_consumption=F('with_pump') * F('norm__work_with_pump_liter_per_min'),
                  without_pump_consumption=F('without_pump') * F('norm__work_without_pump_liter_per_min')). \
@@ -261,3 +261,17 @@ class NormUpdate(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, Upd
     error_message = "Ошибка!"
     template_name = 'cards/norm_add.html'
     extra_context = {'title': 'Изменить норму'}
+
+
+class ReportDetail(LoginRequiredMixin, DetailView):
+    model = Card
+    template_name = 'cards/report_detail.html'
+    context_object_name = 'report'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['title'] = f'Отчет {self.object}'
+
+        report_data = calculated_result(self.object)
+        ctx['report_data'] = report_data
+        return ctx

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load common_filters %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="display-6 text-center">
+                    {{ title }}
+                    <a class="link-secondary" href="{% url 'card_detail' object.id %}">
+                        <i class="text-danger ms-2 float-end bi bi-x-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <table class="table">
+                <tbody>
+
+                <tr>
+                    <td>спидометр нач мес</td>
+                    <td><span class="float-end badge bg-secondary">{{ object.mileage }} км.</span></td>
+                </tr>
+                <tr>
+                    <td>спидометр кон мес</td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.current_mileage }} км.</span></td>
+                </tr>
+                <tr>
+                    <td>остаток гсм на нач мес</td>
+                    <td><span class="float-end badge bg-secondary">{{ object.remaining_fuel.normalize  }} л.</span></td>
+                </tr>
+                <tr>
+                    <td>приход гсм</td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.total_refueled }} л.</span></td>
+                </tr>
+                <tr>
+                    <td>расход гсм</td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.total_fuel_consumption.normalize }} л.</span></td>
+                </tr>
+                <tr>
+                    <td>остаток гсм на кон мес</td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.remaining_fuel.normalize }} л.</span></td>
+                </tr>
+                <tr>
+                    <td>расход топлива с насосом</td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.total_with_pump_consumption.normalize }} л.</span></td>
+                </tr>
+                <tr>
+                    <td>расход топлива без насоса</td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.total_without_pump_consumption.normalize }} л.</span></td>
+                </tr>
+                <tr>
+                    <td>работа с насосом</td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.total_time_with_pump }} мин.</span></td>
+                </tr>
+                <tr>
+                    <td>работа без насоса</td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.total_time_without_pump }} мин.</span></td>
+                </tr>
+                <tr>
+                    <td>пробег</td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.total_distance }} км.</span></td>
+                </tr>
+                <tr>
+                    <td>расход по пробегу</td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.total_mileage_consumption.normalize }} л.</span></td>
+                </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+{% endblock %}

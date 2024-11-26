@@ -19,8 +19,8 @@ urlpatterns = [
     path('norm-delete/<int:pk>/', views.NormDelete.as_view(), name='norm_delete'),
     path('norm-edit/<int:pk>/', views.NormUpdate.as_view(), name='norm_edit'),
 
-    # path('report/<int:pk>/', views.ReportDetail.as_view(), name='report_detail'),
-    #
+    path('report/<int:pk>/', views.ReportDetail.as_view(), name='report_detail'),
+
     # path('short-report/<int:pk>/', views.ShortReport.as_view(), name='short_report'),
     # path('short-report_email/<int:pk>/', views.ShortReportEmail.as_view(), name='short_report_email'),
     # path('full-report/<int:pk>/', views.FullReport.as_view(), name='full_report'),
