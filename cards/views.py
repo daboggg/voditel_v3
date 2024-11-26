@@ -1,12 +1,17 @@
 from datetime import date, datetime
+from io import BytesIO
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.db.models import F, Sum, QuerySet
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from weasyprint import HTML, CSS
 
 from cards.forms import CardAddForm, DepartureAddForm
 from cards.models import Card, Departure, Norm
@@ -275,3 +280,35 @@ class ReportDetail(LoginRequiredMixin, DetailView):
         report_data = calculated_result(self.object)
         ctx['report_data'] = report_data
         return ctx
+
+
+def convert_html_to_pdf_stream(template: str, context: dict) -> BytesIO:
+    html_content = render_to_string(template, context)
+    memory_buffer = BytesIO()
+    pdf = HTML(string=html_content).write_pdf(target=memory_buffer, stylesheets=[CSS(string='@page {size: landscape}')])
+
+    return memory_buffer
+
+
+class FullReport(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        card = Card.objects.get(pk=kwargs.get('pk'))
+
+        report_data = calculated_result(card)
+        report_data['card'] = card
+
+        pdf_stream = convert_html_to_pdf_stream('cards/full_report_pdf.html', report_data)
+        response = HttpResponse(pdf_stream.getvalue(), content_type='application/pdf')
+        return response
+
+
+class ShortReport(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        card = Card.objects.get(pk=kwargs.get('pk'))
+
+        report_data = calculated_result(card)
+        report_data['card'] = card
+
+        pdf_stream = convert_html_to_pdf_stream('cards/short_report_pdf.html', report_data)
+        response = HttpResponse(pdf_stream.getvalue(), content_type='application/pdf')
+        return response
