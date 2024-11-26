@@ -115,3 +115,7 @@ class DepartureAddForm(forms.ModelForm):
             raise ValidationError(
                 'Одно из указанных полей должно быть заполнено')
         return cd
+
+
+class ReportEmailForm(forms.Form):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))

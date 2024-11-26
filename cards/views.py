@@ -3,6 +3,7 @@ from io import BytesIO
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import F, Sum, QuerySet
 from django.http import HttpResponse
@@ -10,10 +11,10 @@ from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, FormView
 from weasyprint import HTML, CSS
 
-from cards.forms import CardAddForm, DepartureAddForm
+from cards.forms import CardAddForm, DepartureAddForm, ReportEmailForm
 from cards.models import Card, Departure, Norm
 from mixins import ErrorMessageMixin
 
@@ -312,3 +313,61 @@ class ShortReport(LoginRequiredMixin, View):
         pdf_stream = convert_html_to_pdf_stream('cards/short_report_pdf.html', report_data)
         response = HttpResponse(pdf_stream.getvalue(), content_type='application/pdf')
         return response
+
+
+class FullReportEmail(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, FormView):
+    template_name = 'cards/report_email.html'
+    success_message = "Email отправлен"
+    error_message = 'Ошибка!'
+    form_class = ReportEmailForm
+    extra_context = {'title': 'Полный отчет на email'}
+
+    def get_success_url(self):
+        return reverse_lazy('card_detail', kwargs={'pk': self.kwargs.get('pk')})
+
+    def setup(self, request, *args, **kwargs):
+        self.card = get_object_or_404(Card, pk=kwargs['pk'])
+        report_data = calculated_result(self.card)
+        report_data['card'] = self.card
+        self.pdf_stream = convert_html_to_pdf_stream('cards/full_report_pdf.html', report_data)
+        super().setup(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        email = EmailMessage(
+            subject=f'Отчет {self.card}',
+            body='Отчет находится в прикрепленном файле',
+            from_email='zvovan77@yandex.ru',
+            to=[form.cleaned_data.get("email")]
+        )
+        email.attach(f"отчет-{self.card.truck.name}-{self.card.month.month}-{self.card.month.year}.pdf", self.pdf_stream.getvalue())
+        email.send()
+        return super().form_valid(form)
+
+
+class ShortReportEmail(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, FormView):
+    template_name = 'cards/report_email.html'
+    success_message = "Email отправлен"
+    error_message = 'Ошибка!'
+    form_class = ReportEmailForm
+    extra_context = {'title': 'Короткий отчет на email'}
+
+    def get_success_url(self):
+        return reverse_lazy('card_detail', kwargs={'pk': self.kwargs.get('pk')})
+
+    def setup(self, request, *args, **kwargs):
+        self.card = get_object_or_404(Card, pk=kwargs['pk'])
+        report_data = calculated_result(self.card)
+        report_data['card'] = self.card
+        self.pdf_stream = convert_html_to_pdf_stream('cards/short_report_pdf.html', report_data)
+        super().setup(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        email = EmailMessage(
+            subject=f'Отчет {self.card}',
+            body='Отчет находится в прикрепленном файле',
+            from_email='zvovan77@yandex.ru',
+            to=[form.cleaned_data.get("email")]
+        )
+        email.attach(f"отчет-{self.card.truck.name}-{self.card.month.month}-{self.card.month.year}.pdf", self.pdf_stream.getvalue())
+        email.send()
+        return super().form_valid(form)

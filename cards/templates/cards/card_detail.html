@@ -37,7 +37,7 @@
                         <td>
                             <span class="float-end"><a href="{% url 'short_report' card.pk %}"
                                                        class="ms-3 btn btn-outline-secondary fw-bold"><i class="bi bi-download"></i></a></span>
-                            <span class="float-end"><a href="#"
+                            <span class="float-end"><a href="{% url 'short_report_email' card.pk %}"
                                                        class="btn btn-outline-secondary fw-bold"><i class="bi bi-threads"></i></a></span>
                         </td>
                     </tr>
@@ -46,7 +46,7 @@
                         <td>
                             <span class="float-end"><a href="{% url 'full_report' card.pk %}"
                                                        class="ms-3 btn btn-outline-secondary fw-bold"><i class="bi bi-download"></i></a></span>
-                            <span class="float-end"><a href="#"
+                            <span class="float-end"><a href="{% url 'full_report_email' card.pk %}"
                                                        class="btn btn-outline-secondary fw-bold"><i class="bi bi-threads"></i></a></span>
                         </td>
                     </tr>
