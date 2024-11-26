@@ -48,25 +48,16 @@ class Departure(models.Model):
     date = models.DateField(verbose_name='дата выезда')
     departure_time = models.TimeField(verbose_name='время выезда')
     return_time = models.TimeField(verbose_name='время возвращения')
-    # departure_datetime = models.DateTimeField(verbose_name='время и дата выезда', blank=True, null=True)
-    # return_datetime = models.DateTimeField(verbose_name='время и дата возвращения', blank=True, null=True)
     place_of_work = models.CharField(max_length=40, verbose_name='место/цель выезда')
-    # mileage_start = models.PositiveIntegerField(verbose_name='пробег перед выездом (км)')
     distance = models.PositiveIntegerField(blank=True, null=True, verbose_name='пройдено (км)')
-    # mileage_end = models.PositiveIntegerField(blank=True, null=True, verbose_name='пробег после выезда (км)')
     with_pump = models.PositiveIntegerField(blank=True, null=True, verbose_name='с насосом (мин)')
     without_pump = models.PositiveIntegerField(blank=True, null=True, verbose_name='без насоса (мин)')
     refueled = models.PositiveIntegerField(blank=True, null=True, verbose_name='заправлено (л)')
 
-    # fuel_consumption = models.DecimalField(max_digits=7, decimal_places=3, blank=True, null=True, verbose_name='расход топлива (л)')
     card = models.ForeignKey(Card, related_name='departures', on_delete=models.CASCADE, verbose_name='карточка')
     user = models.ForeignKey(get_user_model(), related_name='departures', on_delete=models.CASCADE,
                              verbose_name='пользователь')
     norm = models.ForeignKey(Norm, related_name="departures", on_delete=models.CASCADE, verbose_name='норма')
-
-    # def __iter__(self):
-    #     for field in self._meta.fields:
-    #         yield field.verbose_name, field.value_to_string(self)
 
     def show_departure(self):
         res = f'{self.departure_time.strftime("%H:%M")}-{self.return_time.strftime("%H:%M")}, {self.place_of_work}'
@@ -92,17 +83,4 @@ class Departure(models.Model):
     def save(self, *args, **kwargs):
         self.departure_time = self.departure_time.replace(second=0)
         self.return_time = self.return_time.replace(second=0)
-        # self.departure_datetime = datetime.datetime.combine(self.date, self.departure_time, tzinfo=datetime.timezone.utc)
-        # self.return_datetime = datetime.datetime.combine(self.date, self.return_time, tzinfo=datetime.timezone.utc)
         super().save(*args, **kwargs)
-    #
-    # def clean(self):
-    #     super().clean()
-    #     if self.distance is not None and self.mileage_end is None:
-    #         self.mileage_end = self.mileage_start + self.distance
-    #     elif self.distance is None and self.mileage_end is not None:
-    #         self.distance = self.mileage_end - self.mileage_start
-    #
-    #     if self.mileage_end is not None and self.distance is not None:
-    #         if self.mileage_start != self.mileage_end - self.distance:
-    #             raise ValidationError('Значение в поле "Пройдено" и(или) "Пробег после выезда" неверно')

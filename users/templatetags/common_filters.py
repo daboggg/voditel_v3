@@ -14,7 +14,6 @@ def pagination(context):
     }
 
 
-
 @register.filter
 def alert_class(value):
     alerts = {
@@ -24,6 +23,7 @@ def alert_class(value):
     if value in alerts:
         return alerts.get(value)
     return value
+
 
 @register.filter
 def get_rus_month_year(dt: date) -> str:
@@ -42,9 +42,4 @@ def get_rus_month_year(dt: date) -> str:
         'Декабрь',
     ]
 
-    return f"{months[dt.month-1]} {dt.year}"
-
-
-# @register.filter
-# def get_label_for_field(field_name: str):
-#     return Departure._meta.get_field(field_name).verbose_name
+    return f"{months[dt.month - 1]} {dt.year}"

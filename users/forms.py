@@ -30,9 +30,6 @@ class RegisterUserForm(UserCreationForm):
                                  widget=forms.SelectDateWidget(years=tuple(range(this_year - 100, this_year - 5)),
                                                                attrs={'class': ''}, ))
 
-    # date_birth = forms.DateField(label="Дата рождения",
-    #                              widget=widgets.DateInput())
-
     class Meta:
         model = get_user_model()
         fields = ['username', 'email',
@@ -73,8 +70,6 @@ class ProfileUserForm(forms.ModelForm):
                                                                # empty_label=("Choose Year", "Choose Month", "Choose Day"),
                                                                ))
 
-    # date_birth = forms.DateField(label="Дата рождения",
-    #                              widget=widgets.DateInput())
     class Meta:
         model = get_user_model()
         fields = ['username', 'email', 'first_name', 'last_name', 'photo', 'date_birth']
@@ -99,4 +94,3 @@ class UserPasswordResetForm(PasswordResetForm):
         max_length=254,
         widget=forms.EmailInput(attrs={"autocomplete": "email", "class": "form-control"}),
     )
-

@@ -42,7 +42,6 @@ class ProfileUser(SuccessMessageMixin, ErrorMessageMixin, LoginRequiredMixin, Up
     success_message = "%(username)s - профиль изменен"
     error_message = "Ошибка!"
 
-
     def get_success_url(self):
         return reverse_lazy("users:profile")
 
@@ -58,8 +57,6 @@ class UserPasswordChange(SuccessMessageMixin, ErrorMessageMixin, PasswordChangeV
     success_message = "пароль изменен"
     error_message = "Ошибка!"
 
+
 class UserPasswordReset(PasswordResetView):
     form_class = UserPasswordResetForm
-
-
-
