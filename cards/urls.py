@@ -13,12 +13,12 @@ urlpatterns = [
     path('departure/<int:pk>/', views.DepartureDetail.as_view(), name='departure_detail'),
     path('departure-delete/<int:pk>/', views.DepartureDelete.as_view(), name='departure_delete'),
     path('departure-edit/<int:pk>/', views.DepartureUpdate.as_view(), name='departure_edit'),
-    #
-    # path('norms/', views.NormList.as_view(), name='norm_list'),
-    # path('norm-add/', views.NormAdd.as_view(), name='norm_add'),
-    # path('norm-delete/<int:pk>/', views.NormDelete.as_view(), name='norm_delete'),
-    # path('norm-edit/<int:pk>/', views.NormUpdate.as_view(), name='norm_edit'),
-    #
+
+    path('norms/', views.NormList.as_view(), name='norm_list'),
+    path('norm-add/', views.NormAdd.as_view(), name='norm_add'),
+    path('norm-delete/<int:pk>/', views.NormDelete.as_view(), name='norm_delete'),
+    path('norm-edit/<int:pk>/', views.NormUpdate.as_view(), name='norm_edit'),
+
     # path('report/<int:pk>/', views.ReportDetail.as_view(), name='report_detail'),
     #
     # path('short-report/<int:pk>/', views.ShortReport.as_view(), name='short_report'),

@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
 from cards.forms import CardAddForm, DepartureAddForm
-from cards.models import Card, Departure
+from cards.models import Card, Departure, Norm
 from mixins import ErrorMessageMixin
 
 
@@ -223,3 +223,32 @@ class DepartureUpdate(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin
         kwargs['departure'] = self.object
         kwargs['update'] = True
         return kwargs
+
+
+class NormList(LoginRequiredMixin, ListView):
+    model = Norm
+    template_name = "cards/norm_list.html"
+    extra_context = {'title': 'Нормы'}
+    context_object_name = 'norms'
+
+class NormAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, CreateView):
+    model = Norm
+    template_name = 'cards/norm_add.html'
+    extra_context = {'title': 'Добавить норму'}
+    success_url = reverse_lazy('norm_list')
+    success_message = "Норма создана"
+    error_message = 'Ошибка!'
+    fields = '__all__'
+
+class NormDelete(LoginRequiredMixin, DeleteView):
+    model = Norm
+    success_url = reverse_lazy('norm_list')
+
+class NormUpdate(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, UpdateView):
+    model = Norm
+    fields = '__all__'
+    success_url = reverse_lazy('norm_list')
+    success_message = "Данные изменены"
+    error_message = "Ошибка!"
+    template_name = 'cards/norm_add.html'
+    extra_context = {'title': 'Изменить норму'}
