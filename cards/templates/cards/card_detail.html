@@ -66,7 +66,7 @@
                 <tr>
                     <td>топливо в баках:</td>
                     <td><span
-                            class="float-end badge {% if remaining_fuel < 0 %} bg-danger {% elif remaining_fuel  < 200 and card.truck.name == 'Урал' or remaining_fuel  < 400 and card.truck.name == 'Камаз' %} bg-warning {% else %} bg-secondary {% endif %} ">{{ remaining_fuel.normalize }} л</span>
+                            class="float-end badge {% if remaining_fuel < 0 %} bg-danger {% elif remaining_fuel  < 200 and card.truck.name == 'Урал' or remaining_fuel  < 400 and card.truck.name == 'Камаз' %} bg-warning {% else %} bg-secondary {% endif %} ">{{ remaining_fuel.normalize|default:card.remaining_fuel.normalize }} л</span>
                     </td>
                 </tr>
                 <tr>

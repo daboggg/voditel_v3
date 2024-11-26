@@ -39,20 +39,23 @@ class CardAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, Create
 
 
 def calculated_result(card: Card) -> dict:
-    res = card.departures.aggregate(
-        total_distance=Sum('distance', default=0),
-        total_mileage_consumption=Sum('distance', default=0) * card.norm.liter_per_km,
-        total_time_with_pump=Sum('with_pump', default=0),
-        total_with_pump_consumption=Sum('with_pump', default=0) * card.norm.work_with_pump_liter_per_min,
-        total_time_without_pump=Sum('without_pump', default=0),
-        total_without_pump_consumption=Sum('without_pump',
-                                           default=0) * card.norm.work_without_pump_liter_per_min,
-        total_refueled=Sum('refueled', default=0),
-        total_fuel_consumption=F('total_mileage_consumption') + F('total_with_pump_consumption') + F(
-            'total_without_pump_consumption'),
-        remaining_fuel=card.remaining_fuel + F('total_refueled') - F('total_fuel_consumption'),
-        current_mileage=card.mileage + F('total_distance')
-    )
+    res = card.departures. \
+        annotate(mileage_consumption=F('distance') * F('norm__liter_per_km'),
+                 with_pump_consumption=F('with_pump') * F('norm__work_with_pump_liter_per_min'),
+                 without_pump_consumption=F('without_pump') * F('norm__work_without_pump_liter_per_min')). \
+        aggregate(
+            total_distance=Sum('distance', default=0),
+            total_mileage_consumption=Sum('mileage_consumption', default=0),
+            total_time_with_pump=Sum('with_pump', default=0),
+            total_with_pump_consumption=Sum('with_pump_consumption', default=0),
+            total_time_without_pump=Sum('without_pump', default=0),
+            total_without_pump_consumption=Sum('without_pump_consumption', default=0),
+            total_refueled=Sum('refueled', default=0),
+            total_fuel_consumption=F('total_mileage_consumption') + F('total_with_pump_consumption') + F(
+                'total_without_pump_consumption'),
+            remaining_fuel=card.remaining_fuel + F('total_refueled') - F('total_fuel_consumption'),
+            current_mileage=card.mileage + F('total_distance'))
+
     return res
 
 
@@ -91,6 +94,9 @@ class CardUpdate(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, Upd
     error_message = "Ошибка!"
     template_name = 'cards/card_add.html'
     extra_context = {'title': 'Изменить карточку'}
+
+    def get_success_url(self):
+        return reverse_lazy('card_detail', kwargs={'pk': self.object.pk})
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -183,11 +189,11 @@ class DepartureDetail(LoginRequiredMixin, DetailView):
         # топливо израсходовано за выезд
         fuel_consumption = 0
         if self.object.distance:
-            fuel_consumption += self.object.distance * self.object.card.norm.liter_per_km
+            fuel_consumption += self.object.distance * self.object.norm.liter_per_km
         if self.object.with_pump:
-            fuel_consumption += self.object.with_pump * self.object.card.norm.work_with_pump_liter_per_min
+            fuel_consumption += self.object.with_pump * self.object.norm.work_with_pump_liter_per_min
         if self.object.without_pump:
-            fuel_consumption += self.object.without_pump * self.object.card.norm.work_without_pump_liter_per_min
+            fuel_consumption += self.object.without_pump * self.object.norm.work_without_pump_liter_per_min
 
         ctx['mileage_start'] = mileage_start
         ctx['mileage_end'] = mileage_end
@@ -231,6 +237,7 @@ class NormList(LoginRequiredMixin, ListView):
     extra_context = {'title': 'Нормы'}
     context_object_name = 'norms'
 
+
 class NormAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, CreateView):
     model = Norm
     template_name = 'cards/norm_add.html'
@@ -240,9 +247,11 @@ class NormAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, Create
     error_message = 'Ошибка!'
     fields = '__all__'
 
+
 class NormDelete(LoginRequiredMixin, DeleteView):
     model = Norm
     success_url = reverse_lazy('norm_list')
+
 
 class NormUpdate(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, UpdateView):
     model = Norm
