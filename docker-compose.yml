@@ -9,6 +9,7 @@ services:
 #      - .env
 
   web:
+    restart: always
     container_name: web
     build: .
     #    command: python manage.py runserver 0.0.0.0:8000
@@ -29,6 +30,7 @@ services:
       - db_volume:/code/db
 
   nginx:
+    restart: always
     container_name: v_nginx
     build:
       dockerfile: ./Dockerfile
