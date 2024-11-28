@@ -1,20 +1,21 @@
 from datetime import date, datetime
 from io import BytesIO
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import F, Sum, QuerySet
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, FormView
 from weasyprint import HTML, CSS
 
-from cards.forms import CardAddForm, DepartureAddForm, ReportEmailForm
+from cards.forms import CardAddForm, DepartureAddForm, ReportEmailForm, ReportChoiceForm
 from cards.models import Card, Departure, Norm
 from mixins import ErrorMessageMixin
 
@@ -371,3 +372,55 @@ class ShortReportEmail(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixi
         email.attach(f"отчет-{self.card.truck.name}-{self.card.month.month}-{self.card.month.year}.pdf", self.pdf_stream.getvalue())
         email.send()
         return super().form_valid(form)
+
+
+class ReportChoice(LoginRequiredMixin, FormView):
+    template_name = 'cards/report_choice.html'
+    form_class = ReportChoiceForm
+    extra_context = {'title': 'Выбор периода'}
+
+    def __init__(self, *args, **kwargs):
+        self.card = None
+        self.cards = None
+        super().__init__(*args, **kwargs)
+
+    def form_valid(self, form):
+        cd = form.cleaned_data
+        cards = Card.objects.filter(month__year=cd.get('year'), month__month=cd.get('month'))
+        if not cards:
+            messages.warning(self.request, 'Нет карточек за этот период')
+            return redirect(reverse_lazy('report_choice'))
+        elif len(cards) == 1:
+            self.card = cards[0]
+            report_data = calculated_result(cards[0])
+            report_data['card'] = cards[0]
+            pdf_stream = convert_html_to_pdf_stream('cards/short_report_pdf.html', report_data)
+        else:
+            self.cards = cards
+            reports_data = list()
+            for card in cards:
+                report_data = calculated_result(card)
+                report_data['card'] = card
+                reports_data.append(report_data)
+            pdf_stream = convert_html_to_pdf_stream('cards/short_reports_pdf.html', {'data': reports_data})
+
+        # если есть значение в поле email отправляем письмо по введенному адресу
+        if cd.get('email'):
+            email = EmailMessage(
+                body='Отчет находится в прикрепленном файле',
+                from_email='zvovan77@yandex.ru',
+                to=[cd.get("email")]
+            )
+            if self.card:
+                email.subject = f'Отчет {self.card}'
+                email.attach(f"отчет-{self.card.truck.name}-{self.card.month.month}-{self.card.month.year}.pdf",
+                             pdf_stream.getvalue())
+            elif self.cards:
+                email.subject = f'Отчет {self.cards[0].truck.name} и {self.cards[1]}'
+                email.attach(f"отчет-{self.cards[0].truck.name}-{self.cards[1].truck.name}-{self.cards[0].month.month}-{self.cards[0].month.year}.pdf",
+                             pdf_stream.getvalue())
+
+            email.send()
+
+        response = HttpResponse(pdf_stream.getvalue(), content_type='application/pdf')
+        return response

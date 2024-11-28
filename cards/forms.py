@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from bootstrap_datepicker_plus.widgets import MonthPickerInput, DatePickerInput, TimePickerInput
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
+from django.utils import dates
 
 from cards.models import Truck, Norm, Card, Departure
 
@@ -119,3 +120,22 @@ class DepartureAddForm(forms.ModelForm):
 
 class ReportEmailForm(forms.Form):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
+
+
+YEARS = {year: str(year) for year in range(date.today().year - 1, date.today().year + 2)}
+
+
+class ReportChoiceForm(forms.Form):
+    month = forms.CharField(
+        label='Месяц',
+        initial=date.today().month,
+        widget=forms.Select(choices=dates.MONTHS, attrs={'class': 'form-control'}))
+    year = forms.CharField(
+        label='Год',
+        initial=date.today().year,
+        widget=forms.Select(choices=YEARS, attrs={'class': 'form-control'}))
+    email = forms.EmailField(
+        label='Email',
+        required=False,
+        widget=forms.EmailInput(attrs={'class': 'form-control'}))
+

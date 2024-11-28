@@ -20,6 +20,7 @@ urlpatterns = [
     path('norm-edit/<int:pk>/', views.NormUpdate.as_view(), name='norm_edit'),
 
     path('report/<int:pk>/', views.ReportDetail.as_view(), name='report_detail'),
+    path('report-choice/', views.ReportChoice.as_view(), name='report_choice'),
 
     path('short-report/<int:pk>/', views.ShortReport.as_view(), name='short_report'),
     path('short-report_email/<int:pk>/', views.ShortReportEmail.as_view(), name='short_report_email'),
