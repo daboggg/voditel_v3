@@ -128,11 +128,9 @@ YEARS = {year: str(year) for year in range(date.today().year - 1, date.today().y
 class ReportChoiceForm(forms.Form):
     month = forms.CharField(
         label='Месяц',
-        initial=date.today().month,
         widget=forms.Select(choices=dates.MONTHS, attrs={'class': 'form-control'}))
     year = forms.CharField(
         label='Год',
-        initial=date.today().year,
         widget=forms.Select(choices=YEARS, attrs={'class': 'form-control'}))
     email = forms.EmailField(
         label='Email',

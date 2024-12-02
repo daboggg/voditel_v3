@@ -384,6 +384,12 @@ class ReportChoice(LoginRequiredMixin, FormView):
         self.cards = None
         super().__init__(*args, **kwargs)
 
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['month'] = date.today().month
+        initial['year'] = date.today().year
+        return initial
+
     def form_valid(self, form):
         cd = form.cleaned_data
         cards = Card.objects.filter(month__year=cd.get('year'), month__month=cd.get('month'))
