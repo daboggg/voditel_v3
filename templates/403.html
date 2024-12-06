@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Нет доступа
+{% endblock %}
+
+{% block content %}
+    <div class="row align-items-center percent90-height justify-content-center">
+
+        <div class="col-sm-8 col-md-8 col-lg-4">
+            <div class="display-6 text-center mb-3">У вас нет доступа к этой странице</div>
+            <p>Обратитесь к администратору vzinin@list.ru</p>
+            <p>Возврат на <a href="{% url 'home' %}">главную страницу</a></p>
+        </div>
+    </div>
+{% endblock %}
