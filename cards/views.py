@@ -2,7 +2,7 @@ from datetime import date, datetime
 from io import BytesIO
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
@@ -111,10 +111,11 @@ class CardUpdate(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, Upd
         return kwargs
 
 
-class CardDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class CardDelete(PermissionRequiredMixin, LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Card
     success_url = reverse_lazy("card_list")
     success_message = "Карточка удалена"
+    permission_required = 'cards.delete_card'
 
 
 class DepartureAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, CreateView):
@@ -255,9 +256,10 @@ class NormAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, Create
     fields = '__all__'
 
 
-class NormDelete(LoginRequiredMixin, DeleteView):
+class NormDelete(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     model = Norm
     success_url = reverse_lazy('norm_list')
+    permission_required = 'cards.delete_norm'
 
 
 class NormUpdate(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, UpdateView):
