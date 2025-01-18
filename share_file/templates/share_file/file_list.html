@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load common_filters %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <div class="row align-items-center percent90-height justify-content-center">
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Загрузка</button>
+        </form>
+
+        <div class="col text-center">
+            <div class="display-6 text-center mb-3">{% if files %}{{ title }}{% else %}Файлов нет{% endif %}</div>
+            <ul class="list-group">
+                {% for file in files %}
+                    <li class="list-group-item">
+                        {#                        <a class="link-secondary" href="{% url 'card_detail' card.pk %}">{{ card }}</a>#}
+                        {{ file }}
+                        <a class="link-secondary" href="{{ file.file.url }}">tyc</a>
+
+                    </li>
+                {% endfor %}
+            </ul>
+
+            {% pagination %}
+
+            <a href="{% url 'share_file:file_add' %}" class="btn btn-secondary mt-4">Добавить файл</a>
+        </div>
+    </div>
+{% endblock %}

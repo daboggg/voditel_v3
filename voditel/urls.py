@@ -22,6 +22,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls', namespace='users')),
+    path('share-file/', include('share_file.urls', namespace='share_file')),
     path('', include('cards.urls'))
 ]
 

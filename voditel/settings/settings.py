@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cards.apps.CardsConfig',
     'users.apps.UsersConfig',
+    'share_file.apps.ShareFileConfig',
     'bootstrap_datepicker_plus',
 
 ]

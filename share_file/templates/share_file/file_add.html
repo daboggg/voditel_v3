@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load common_filters %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <div class="row align-items-center percent90-height justify-content-center">
+
+        <div class="col text-center">
+            <div class="display-6 text-center mb-3">{% if files %}{{ title }}:{% else %}Файлов нет{% endif %}</div>
+            <ul class="list-group">
+                {% for file in files %}
+                    <li class="list-group-item">
+                        {#                        <a class="link-secondary" href="{% url 'card_detail' card.pk %}">{{ card }}</a>#}
+                        <a class="link-secondary float-start" href="{{ file.file.url }}">{{ file }}</a>
+                        <a class="link-secondary" href="{% url 'share_file:file_delete' file.pk %}"><i class="text-danger float-end bi bi-x-lg"></i></a>
+
+
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+        <div class="row">
+            <form class="col-xl-6 col-md-8" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for f in form %}
+                <div class="mb-3">
+                    <label for="{{ f.id_for_label }}" class="form-label">{{ f.label }}</label>
+                    {{ f }}
+                    <div class="form-text text-danger">{{ f.errors }}</div>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-secondary">Добавить</button>
+        </form>
+        </div>
+
+    </div>
+{% endblock %}
