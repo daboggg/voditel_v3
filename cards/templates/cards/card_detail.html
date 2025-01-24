@@ -11,6 +11,9 @@
         <div class="card-header">
             <div>
                 <div class="display-6 text-center">
+                    <a class="link-secondary" href="{% url 'card_list' %}">
+                        <i class="ms-3 float-start bi bi-arrow-up-left-square"></i>
+                    </a>
                     {{ title }}
                     <a class="link-secondary" href="{% url 'card_delete' card.id %}">
                         <i class="ms-3 float-end bi bi-trash"></i>
