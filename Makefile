@@ -1,14 +1,14 @@
 up:
-	docker compose up
+	docker-compose up
 
 down:
-	docker compose down
+	docker-compose down
 
 downv:
-	docker compose down -v
+	docker-compose down -v
 
 upd:
-	docker compose up -d
+	docker-compose up -d
 
 bld:
-	docker compose build
+	docker-compose build
