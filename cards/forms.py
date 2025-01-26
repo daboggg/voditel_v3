@@ -137,3 +137,18 @@ class ReportChoiceForm(forms.Form):
         required=False,
         widget=forms.EmailInput(attrs={'class': 'form-control'}))
 
+
+class NormAddForm(forms.ModelForm):
+    season = forms.CharField(label='марка авто и сезон',
+                             widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    liter_per_km = forms.DecimalField(label='пробег (л/км)',
+                                        widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    work_with_pump_liter_per_min = forms.DecimalField(label='работа с насосом (л/мин)',
+                                                      widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    work_without_pump_liter_per_min = forms.DecimalField(label='работа без насоса (л/мин)',
+                                                         widget=forms.NumberInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Norm
+        fields = ['season', 'liter_per_km', 'work_with_pump_liter_per_min','work_without_pump_liter_per_min']
