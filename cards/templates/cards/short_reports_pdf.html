@@ -1,5 +1,6 @@
 <!doctype html>
 {% load static %}
+{% load card_filters %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -32,12 +33,12 @@
             <tr>
                 <th scope="row">С насосом</th>
                 <td>{{ d.total_time_with_pump }} мин</td>
-                <td>{{ d.total_with_pump_consumption.normalize }} л</td>
+                <td>{{ d.total_with_pump_consumption|round3  }} л</td>
             </tr>
             <tr>
                 <th scope="row">Без насоса</th>
                 <td>{{ d.total_time_without_pump }} мин</td>
-                <td>{{ d.total_without_pump_consumption.normalize}} л</td>
+                <td>{{ d.total_without_pump_consumption|round3 }} л</td>
             </tr>
             <tr>
                 <th>Общий расход</th>
@@ -62,11 +63,6 @@
             </tbody>
         </table>
     {% endfor %}
-
-
-
-
-{#    <h5 class="text-end my-5">составил водитель Санников А.Е</h5>#}
 
 </div>
 

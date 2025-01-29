@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load common_filters %}
+{% load card_filters %}
 {% block title %}
     {{ title }}
 {% endblock %}
@@ -48,11 +49,11 @@
                 </tr>
                 <tr>
                     <td>расход топлива с насосом</td>
-                    <td><span class="float-end badge bg-secondary">{{ report_data.total_with_pump_consumption.normalize }} л.</span></td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.total_with_pump_consumption|round3  }} л.</span></td>
                 </tr>
                 <tr>
                     <td>расход топлива без насоса</td>
-                    <td><span class="float-end badge bg-secondary">{{ report_data.total_without_pump_consumption.normalize }} л.</span></td>
+                    <td><span class="float-end badge bg-secondary">{{ report_data.total_without_pump_consumption|round3  }} л.</span></td>
                 </tr>
                 <tr>
                     <td>работа с насосом</td>
