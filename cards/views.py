@@ -158,7 +158,7 @@ class DepartureAdd(LoginRequiredMixin, SuccessMessageMixin, ErrorMessageMixin, C
             initial['return_time'] = '22:00:00'
             initial['place_of_work'] = 'Целевой дозор'
             initial['distance'] = 4
-            initial['without_pump'] = 30
+            initial['without_pump'] = 40
 
         return initial
 
